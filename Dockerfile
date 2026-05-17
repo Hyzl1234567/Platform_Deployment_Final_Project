@@ -31,6 +31,9 @@ COPY . .
 # Wipe any stale cache so entrypoint always builds fresh at runtime
 RUN rm -rf var/cache/*
 
+# Allow Composer plugins (symfony/flex) to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Run post-install scripts now that full app is present
 RUN composer run-script post-install-cmd --no-interaction || true
 
@@ -38,8 +41,9 @@ RUN composer run-script post-install-cmd --no-interaction || true
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Set correct permissions for Symfony var/ directory
-RUN chown -R www-data:www-data /var/www/html/var \
+# Ensure Symfony var/ directory exists and set correct permissions
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data /var/www/html/var \
     && chmod -R 775 /var/www/html/var
 
 EXPOSE 9000
