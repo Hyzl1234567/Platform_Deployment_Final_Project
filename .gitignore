@@ -19,3 +19,9 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Docker
+.dockerignore
+
+# Environment - contains real credentials
+.env
