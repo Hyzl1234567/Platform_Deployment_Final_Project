@@ -1,5 +1,8 @@
 FROM php:8.3-fpm
 
+# Allow Composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -33,6 +36,10 @@ RUN rm -rf var/cache/*
 
 # Run post-install scripts now that full app is present
 RUN composer run-script post-install-cmd --no-interaction || true
+
+# Ensure var/ subdirectories exist (not created by composer install --no-scripts
+# and excluded from .dockerignore)
+RUN mkdir -p var/cache var/log
 
 # Copy and set entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

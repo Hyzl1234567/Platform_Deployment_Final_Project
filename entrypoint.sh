@@ -10,6 +10,9 @@ echo "==> Database is ready."
 echo "==> Running database migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "    Migrations warning (continuing...)"
 
+echo "==> Clearing stale cache..."
+rm -rf var/cache/prod
+
 echo "==> Clearing cache..."
 php bin/console cache:clear --env=prod --no-debug || echo "    Cache clear warning (continuing...)"
 
