@@ -1,9 +1,9 @@
 #!/bin/sh
 
 echo "==> Waiting for database to be ready..."
-until php -r "new PDO('mysql:host=platform_docker-db;dbname=${MYSQL_DATABASE}', '${MYSQL_USER}', '${MYSQL_PASSWORD}');" 2>/dev/null; do
-echo "    Database not ready yet, retrying in 3s..."
-sleep 3
+until php -r "new PDO('mysql:host=${MYSQL_HOST:-platform_docker-db};dbname=${MYSQL_DATABASE}', '${MYSQL_USER}', '${MYSQL_PASSWORD}');" 2>/dev/null; do
+  echo "    Database not ready yet, retrying in 3s..."
+  sleep 3
 done
 echo "==> Database is ready."
 
@@ -24,4 +24,7 @@ chown -R www-data:www-data /var/www/html/var 2>/dev/null || true
 chmod -R 775 /var/www/html/var 2>/dev/null || true
 
 echo "==> Starting PHP-FPM..."
-exec php-fpm
+php-fpm -D
+
+echo "==> Starting Nginx..."
+exec nginx -g "daemon off;"

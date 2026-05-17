@@ -3,10 +3,11 @@ FROM php:8.3-fpm
 # Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install system dependencies
+# Install system dependencies + Nginx
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    nginx \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -37,9 +38,12 @@ RUN rm -rf var/cache/*
 # Run post-install scripts now that full app is present
 RUN composer run-script post-install-cmd --no-interaction || true
 
-# Ensure var/ subdirectories exist (not created by composer install --no-scripts
-# and excluded from .dockerignore)
+# Ensure var/ subdirectories exist
 RUN mkdir -p var/cache var/log
+
+# Copy Nginx config
+COPY nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Copy and set entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
@@ -49,7 +53,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN chown -R www-data:www-data /var/www/html/var \
     && chmod -R 775 /var/www/html/var
 
-EXPOSE 9000
+EXPOSE 80
 
 ENTRYPOINT ["entrypoint.sh"]
-CMD ["php-fpm"]
