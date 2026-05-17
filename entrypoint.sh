@@ -1,7 +1,12 @@
 #!/bin/sh
 
-echo "==> Waiting for database to be ready..."
-until php -r "new PDO('mysql:host=${MYSQL_HOST:-platform_docker-db};dbname=${MYSQL_DATABASE}', '${MYSQL_USER}', '${MYSQL_PASSWORD}');" 2>/dev/null; do
+DB_HOST="${MYSQL_HOST:-${MYSQLHOST:-platform_docker-db}}"
+DB_NAME="${MYSQL_DATABASE:-${MYSQLDATABASE:-database_platform}}"
+DB_USER="${MYSQL_USER:-${MYSQLUSER:-user_platform}}"
+DB_PASS="${MYSQL_PASSWORD:-${MYSQLPASSWORD:-password_platform}}"
+
+echo "==> Waiting for database to be ready at ${DB_HOST}..."
+until php -r "new PDO('mysql:host=${DB_HOST};dbname=${DB_NAME}', '${DB_USER}', '${DB_PASS}');" 2>/dev/null; do
   echo "    Database not ready yet, retrying in 3s..."
   sleep 3
 done
