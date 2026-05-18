@@ -7,8 +7,8 @@ DB_PASS="${MYSQL_PASSWORD:-${MYSQLPASSWORD:-password_platform}}"
 
 echo "==> Waiting for database to be ready at ${DB_HOST}..."
 until php -r "new PDO('mysql:host=${DB_HOST};dbname=${DB_NAME}', '${DB_USER}', '${DB_PASS}');" 2>/dev/null; do
-  echo "    Database not ready yet, retrying in 3s..."
-  sleep 3
+echo "    Database not ready yet, retrying in 3s..."
+sleep 3
 done
 echo "==> Database is ready."
 
